@@ -50,6 +50,7 @@ def signup():
         return resp
 
 
+
 @app.route('/users', methods=['GET'])
 def get():
     cur = mysql.connect().cursor()
