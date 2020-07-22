@@ -43,13 +43,13 @@ def login():
         return resp
 
 
-@app.route('/')
+@app.route('/users', methods=['GET'])
 def get():
     cur = mysql.connect().cursor()
     cur.execute('''select * from tbl_user''')
     r = [dict((cur.description[i][0], value)
               for i, value in enumerate(row)) for row in cur.fetchall()]
-    return jsonify({'myCollection': r})
+    return jsonify({'body': r})
 
 
 if __name__ == '__main__':
