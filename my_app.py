@@ -17,17 +17,24 @@ mysql.init_app(app)
 
 
 @app.route('/signup/', methods=['GET', 'POST'])
-def login():
+def signup():
     if request.method == 'POST' and 'name' and 'email' and 'pwd':
         _json = request.json
         _name = _json['name']
         _email = _json['email']
         _password = _json['pwd']
-    sql = "SELECT * FROM tbl_user WHERE user_email = %s"
-    data = (_email)
-    cur = mysql.connect().cursor()
-    cur.execute(sql, data)
-    account = cur.fetchone()
+    if(len(_name) == 0):
+        return jsonify("User can't be empty!")
+    elif(len(_email) == 0):
+        return jsonify("Email can't be empty!")
+    elif(len(_password) == 0):
+        return jsonify("Password can't be empty!")
+    else:
+        sql = "SELECT * FROM tbl_user WHERE user_email = %s"
+        data = (_email)
+        cur = mysql.connect().cursor()
+        cur.execute(sql, data)
+        account = cur.fetchone()
     if account:
         return jsonify('User already exist!')
     else:
@@ -50,6 +57,23 @@ def get():
     r = [dict((cur.description[i][0], value)
               for i, value in enumerate(row)) for row in cur.fetchall()]
     return jsonify({'body': r})
+
+
+@app.route('/user/<int:id>')
+def user(id):
+    try:
+        conn = mysql.connect()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM tbl_user WHERE user_id=%s", id)
+        row = cursor.fetchone()
+        resp = jsonify(row)
+        resp.status_code = 200
+        return resp
+    except Exception as e:
+        print(e)
+    finally:
+        cursor.close()
+        conn.close()
 
 
 if __name__ == '__main__':
